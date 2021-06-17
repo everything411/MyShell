@@ -40,7 +40,7 @@ int do_mv_dir(char *src, char *dst)
         {
             return 1;
         }
-        if (do_rm_dir(src))
+        if (do_rm_dir(src, 1))
         {
             return 1;
         }

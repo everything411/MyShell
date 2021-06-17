@@ -14,13 +14,20 @@ int exec(char **argv)
     }
     else if (pid == 0)
     {
-        exit(execvp(argv[0], argv));
+        if (execvp(argv[0], argv))
+        {
+            perror(argv[0]);
+        }
+        return 0;
     }
     else
     {
-        int status;
-        waitpid(pid, &status, 0);
-        return status;
+        int wstatus;
+        if (waitpid(pid, &wstatus, 0) == -1)
+        {
+            return 1;
+        }
+        return wstatus;
     }
 }
 
@@ -29,37 +36,36 @@ int main(int argc, char **argv)
     char buf[MAXN];
     int pid;
     int result;
+    char *delim = " \b\r\n\t";
     cmd_cnt = 0;
     memset(history, 0x00, sizeof(history));
     while (1)
     {
-        argcc = 0;
-        memset(arglist, 0x00, sizeof(arglist));
         printf("$ ");
         fflush(stdout);
-        fgets(buf, BUFFSIZE, stdin);
-
-        if (strcmp(buf, "\n") == 0)
-        {
-            printf("\n");
-            continue;
-        }
-        strcpy(history[cmd_cnt], buf);
-        cmd_cnt++;
+        argcc = 0;
         memset(arglist, 0x00, sizeof(arglist));
-
-        char *delim = " \b\r\n\t";
+        if (!fgets(buf, BUFFSIZE, stdin))
+        {
+            break;
+        }
+        strcpy(history[cmd_cnt++], buf);
         char *p;
         p = strtok(buf, delim);
         if (!p)
         {
             continue;
         }
-        arglist[argc++] = p;
+        arglist[argcc++] = p;
         while ((p = strtok(NULL, delim)))
         {
-            arglist[argc++] = p;
+            arglist[argcc++] = p;
         }
+        arglist[argcc] = NULL;
+        // for (int i = 0; i < argcc; i++)
+        // {
+        //     printf("argv[%d]='%s'\n", i, arglist[i]);
+        // }
 
         if (strcmp(arglist[0], "exit") == 0)
         {
@@ -73,15 +79,24 @@ int main(int argc, char **argv)
         }
         else if (strcmp(arglist[0], "cd") == 0)
         {
-            cd(argcc, arglist);
+            if (cd(argcc, arglist))
+            {
+                perror(arglist[0]);
+            }
         }
         else if (strcmp(arglist[0], "cp") == 0)
         {
-            cp(argcc, arglist);
+            if (cp(argcc, arglist))
+            {
+                perror(arglist[0]);
+            }
         }
         else if (strcmp(arglist[0], "ls") == 0)
         {
-            myls(argcc, arglist);
+            if (ls(argcc, arglist))
+            {
+                perror(arglist[0]);
+            }
         }
         else if (strcmp(arglist[0], "history") == 0)
         {
@@ -92,15 +107,24 @@ int main(int argc, char **argv)
         }
         else if (strcmp(arglist[0], "rm") == 0)
         {
-            rm(argcc, arglist);
+            if (rm(argcc, arglist))
+            {
+                perror(arglist[0]);
+            }
         }
         else if (strcmp(arglist[0], "mv") == 0)
         {
-            mv(argcc, arglist);
+            if (mv(argcc, arglist))
+            {
+                perror(arglist[0]);
+            }
         }
         else
         {
-            exec(arglist);
+            if (exec(arglist))
+            {
+                perror(argv[0]);
+            }
         }
     }
     return 0;

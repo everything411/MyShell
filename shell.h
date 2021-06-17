@@ -27,5 +27,6 @@ int cd(int argc, char *argv[]);
 int cp(int argc, char *argv[]);
 int ls(int argc, char *argv[]);
 int rm(int argc, char *argv[]);
+int mv(int argc, char *argv[]);
 
 #endif

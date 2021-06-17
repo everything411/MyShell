@@ -137,11 +137,11 @@ int do_ls(char *dir, int mode)
 
 int ls(int argc, char *argv[])
 {
-    if (argc == 1)
-    {
-        puts("usage: ls -[a][l] [dir]");
-        return 1;
-    }
+    // if (argc == 1)
+    // {
+    //     puts("usage: ls -[a][l] [dir]");
+    //     return 1;
+    // }
     int mode = 0;
     int ch;
     while ((ch = getopt(argc, argv, "al")) != -1)

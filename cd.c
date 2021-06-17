@@ -22,8 +22,8 @@ int cd(int argc, char *argv[])
     }
     if (chdir(dir) < 0)
     {
-        printf("cd: No such file or directory", dir);
+        printf("cd: No such file or directory\n", dir);
         return 1;
     }
-    printf("\n");
+    return 0;
 }
